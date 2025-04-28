@@ -27,10 +27,11 @@ public class Tourist {
 	private Integer id;
 	@Column(name="NAME",length = 50,insertable = true,nullable = false,updatable = true)
 	private String name;
-	@Column(name="NAME",length = 50,insertable = true,nullable = false,updatable = true)
+	@Column(name="CITY",length = 50,insertable = true,nullable = false,updatable = true)
 	private String city;
-	@Column(name="NAME",length = 50,insertable = true,nullable = false,updatable = true)
+	@Column(name="PACKAGETYPE",length = 50,insertable = true,nullable = false,updatable = true)
 	private String packageType;
 	@NonNull
+	@Column(name="BUDGET")
 	private Double budget;
 }
