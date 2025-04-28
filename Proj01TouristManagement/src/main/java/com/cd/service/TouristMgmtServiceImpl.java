@@ -43,6 +43,18 @@ public class TouristMgmtServiceImpl implements ITouristMgmtService {
 		List<Tourist> list=repo.findAllById(ids);
 		return list;
 	}
+	@Override
+	public String updateTouristDetails(Tourist tourist) throws TouristNotFoundException {
+		Optional<Tourist> name=repo.findById(tourist.getId());
+		if(name.isPresent()) {
+			repo.save(tourist);
+			return tourist.getId()+"Tourist is Updated";
+		}
+		else {
+			throw new TouristNotFoundException(tourist.getId()+"tourist Not Found");
+		}
+		
+	}
 	
 	
 

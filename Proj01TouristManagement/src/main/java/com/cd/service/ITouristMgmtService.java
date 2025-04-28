@@ -14,5 +14,5 @@ public interface ITouristMgmtService {
 	public Iterable<Tourist> fetchAllByIds(Iterable<Integer> ids);
 	//public Optional<Tourist> fetchToouristById(List<Integer> ids);
 	
-	
+	public String updateTouristDetails(Tourist tourist) throws TouristNotFoundException;
 }
