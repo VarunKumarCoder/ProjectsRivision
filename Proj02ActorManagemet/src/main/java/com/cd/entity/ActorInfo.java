@@ -40,6 +40,8 @@ public class ActorInfo {
 	@NonNull()
 	@Column(name="ACTIVE_SWITCH",length=10)
 	private String active_sw;
+	@Column(name="REMUNERATION",length=10)
+	private Double remuneration;
 	//META DATA
 	@Column(length=60)
 	private String createdBy;
