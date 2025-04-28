@@ -1,6 +1,8 @@
 package com.cd.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +21,7 @@ public class ActorInfoMgmtImpl implements IActorInfoMgmt {
 	private IActorRepo repo;
 	
 	public ActorInfoMgmtImpl(IActorRepo repo) {
-		super();
+	
 		this.repo = repo;
 	}
 
@@ -39,26 +41,45 @@ public class ActorInfoMgmtImpl implements IActorInfoMgmt {
 
 	@Override
 	public List<ActorData> showAllActors() {
-		// TODO Auto-generated method stub
-		return null;
+		//call original method using entity class
+		List<ActorInfo> list=repo.findAll();
+		//convert entity into model class
+		List<ActorData> modeldata=new ArrayList();
+		//print using enhanced for loop
+		for(ActorInfo entity:list) {
+			//create object to store the list of model data
+			ActorData adata=new ActorData();
+			//finded entity data using predefined class now copy entity into model 
+			BeanUtils.copyProperties(entity, adata);
+			//after copying add data to object
+			modeldata.add(adata);
+		}
+		return modeldata;
 	}
 
 	@Override
 	public ActorData showActorById(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		ActorInfo info=repo.findById(id).orElseThrow(()->new IllegalArgumentException("invalid ID"));
+		ActorData data=new ActorData();
+		BeanUtils.copyProperties(info, data);
+		return data;
 	}
 
 	@Override
 	public String updateActorData(ActorData data) {
-		// TODO Auto-generated method stub
-		return null;
+		ActorInfo info=repo.findById(data.getId()).orElseThrow(()->new IllegalArgumentException("invalid ID"));
+		BeanUtils.copyProperties(data, info);
+		info.setUpdatedBy(osuser);
+		int idVal=repo.save(info).getId();
+		return idVal+" ActorInfo is updated";
 	}
 
 	@Override
 	public String updateActorRemuneration(int id, double amount) {
-		// TODO Auto-generated method stub
-		return null;
+		ActorInfo info=repo.findById(id).orElseThrow(()->new IllegalArgumentException("invalid ID"));
+		info.setRemuneration(amount);
+		int idVal=repo.save(info).getId();
+		return idVal+" is updated";
 	}
 
 	@Override
