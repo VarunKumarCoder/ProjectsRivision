@@ -55,6 +55,43 @@ public class TouristMgmtServiceImpl implements ITouristMgmtService {
 		}
 		
 	}
+	@Override
+	public List<Tourist> getTouritByName(String name) {
+		List<Tourist> Tname=repo.getTouristByName(name);
+		return Tname;
+	}
+	@Override
+	public String updateTouristBudgetById(int tid, double hikePercentage) throws TouristNotFoundException {
+		Optional<Tourist> opt=repo.findById(tid);
+		if(opt.isPresent()) {
+			Tourist tourist=opt.get();//get entire row data of tourist
+			double budget=tourist.getBudget();//get budget data
+			double newBudget=budget+(budget*hikePercentage/100.0);//formula for new budget
+			tourist.setBudget(newBudget);//set new budget data to existing budget
+			repo.save(tourist);
+			return " Tourist Budget is changed according to the new hikePercentage"+newBudget;
+		}
+		else {
+			throw new TouristNotFoundException(tid+" Tourist was not Found");
+		}
+		
+	}
+	@Override
+	public String removeTouristById(int id) throws TouristNotFoundException {
+		Optional<Tourist> opt=repo.findById(id);
+		if(opt.isPresent()) {
+			repo.deleteById(id);
+			return id+" Number Tourist is deleted";
+		}
+		else {
+			throw new TouristNotFoundException(id+" Number Tourist is not Found");
+		}
+	}
+	@Override
+	public String removeTouristByBudgetRange(double start, double end) {
+		int count=repo.removeTouristByBudgetRange(start, end);
+		return count==0?"Tourist Not Found to Dleete":count+" No.of Tourists got deleted";
+	}
 	
 	
 

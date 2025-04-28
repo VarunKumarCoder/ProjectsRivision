@@ -15,4 +15,12 @@ public interface ITouristMgmtService {
 	//public Optional<Tourist> fetchToouristById(List<Integer> ids);
 	
 	public String updateTouristDetails(Tourist tourist) throws TouristNotFoundException;
+	
+	public List<Tourist> getTouritByName(String name);
+	public String updateTouristBudgetById(int tid,double hikePercentage) throws TouristNotFoundException;
+	
+	public String removeTouristById(int id)throws TouristNotFoundException;
+	
+	public String removeTouristByBudgetRange(double start,double end);
+	
 }
