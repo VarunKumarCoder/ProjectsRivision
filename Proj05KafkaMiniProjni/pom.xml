@@ -11,7 +11,7 @@
 	<groupId>com.cd</groupId>
 	<artifactId>Proj05KafkaMiniProjni</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>Proj05KafkaMiniProjni</name>
 	<description>KafkaManagement Project</description>
 	<url/>

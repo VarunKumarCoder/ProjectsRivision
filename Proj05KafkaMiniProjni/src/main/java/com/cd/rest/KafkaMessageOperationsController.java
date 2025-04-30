@@ -1,6 +1,5 @@
 package com.cd.rest;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cd.entity.IndianFestival;
 import com.cd.publlisher.KafkaMessageSender;
-import com.nt.subscriber.KafkaMessageSubscriber;
+import com.cd.subscriber.KafkaMessageSubscriber;
 
 @RestController
 @RequestMapping("/message-api")
@@ -19,7 +18,7 @@ public class KafkaMessageOperationsController {
 
 	@Autowired
 	private KafkaMessageSender sender;
-	@Autowired
+	@Autowired(required = true)
 	private KafkaMessageSubscriber subscriber;
 	
 	@PostMapping("/send")
