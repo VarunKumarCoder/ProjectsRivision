@@ -3,11 +3,14 @@ package com.cd.service;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import com.cd.entity.UserMaster;
@@ -100,20 +103,52 @@ public class UserMgmtServiceImpl implements IUserMgmtService {
 
 	@Override
 	public String login(LoginCredentials credentials) {
-		// TODO Auto-generated method stub
-		return null;
+		UserMaster entity=new UserMaster();
+		BeanUtils.copyProperties(credentials, entity);
+		Example<UserMaster> example=Example.of(entity);
+		List<UserMaster> listEntities=repo.findAll(example);
+		if(listEntities.isEmpty()) {
+			return "Invalid Credentials";
+		}
+		else {
+			UserMaster entityOne=listEntities.get(0);
+			if(entity.getActiveSw().equalsIgnoreCase("Active")) {
+				return " Login Successfull";
+			}
+			else {
+				return " User Account is Inactive";
+			}
+		}
+
 	}
 
 	@Override
 	public List<UserAccount> listUsers() {
-		// TODO Auto-generated method stub
-		return null;
+		/*return repo.findAll().stream().map(entity->{
+			UserAccount user=new UserAccount();
+			BeanUtils.copyProperties(entity, user);
+			return user;
+		}).toList();*/
+		
+		List<UserMaster> listEntities=repo.findAll();
+		List<UserAccount> listUsers=new ArrayList<UserAccount>();
+		listEntities.forEach(entity->{
+			UserAccount user=new UserAccount();
+			BeanUtils.copyProperties(entity, user);
+			listUsers.add(user);
+		});
+		return listUsers;
 	}
 
 	@Override
 	public UserAccount showUserByUserId(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<UserMaster> opt=repo.findById(id);
+		UserAccount account=null;
+		if(opt.isPresent()) {
+			account=new UserAccount();
+			BeanUtils.copyProperties(opt, account);
+		}
+		return account;
 	}
 
 	@Override
