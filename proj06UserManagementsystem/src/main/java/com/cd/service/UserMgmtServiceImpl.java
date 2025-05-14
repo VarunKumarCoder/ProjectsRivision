@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -13,6 +14,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import com.cd.constants.UserRegisterConstants;
 import com.cd.entity.UserMaster;
 import com.cd.model.ActivateUser;
 import com.cd.model.LoginCredentials;
@@ -31,6 +33,9 @@ public class UserMgmtServiceImpl implements IUserMgmtService {
 	@Autowired
 	private Environment env;
 
+	private  Map<String,String> messages;
+	
+	
 	@Override
 	public String registerUser(UserAccount user) throws Exception {
 		UserMaster entity=new UserMaster();
@@ -91,14 +96,14 @@ public class UserMgmtServiceImpl implements IUserMgmtService {
 	public String activateUserAccount(ActivateUser user) {
 		UserMaster entity=repo.findByEmailAndPassword(user.getEmail(),user.getTempPassword());
 		if(entity==null) {
-		return "User is Not Registered with given Eamil";
+		return messages.get(UserRegisterConstants.ACTIVE_FAILURE);
 		}
 		else {
 			entity.setPassword(user.getConfirmPassword());
 			entity.setActiveSw("Active");
 			repo.save(entity);
-			return "User is Activated with the New Password";
-		}
+			return messages.get(UserRegisterConstants.STATUS_CHANGE_SUCCESS);
+					}
 	}
 
 	@Override
@@ -108,16 +113,16 @@ public class UserMgmtServiceImpl implements IUserMgmtService {
 		Example<UserMaster> example=Example.of(entity);
 		List<UserMaster> listEntities=repo.findAll(example);
 		if(listEntities.isEmpty()) {
-			return "Invalid Credentials";
+			return messages.get(UserRegisterConstants.LOGIN_CREDENTIALS_FAILURE);
 		}
 		else {
 			UserMaster entityOne=listEntities.get(0);
 			if(entity.getActiveSw().equalsIgnoreCase("Active")) {
-				return " Login Successfull";
+				return messages.get(UserRegisterConstants.LOGIN_CREDENTIALS_SUCCESS);
 			}
 			else {
-				return " User Account is Inactive";
-			}
+				return messages.get(UserRegisterConstants.STATUS_CHANGE_FAILURE);
+						}
 		}
 
 	}
@@ -169,10 +174,11 @@ public class UserMgmtServiceImpl implements IUserMgmtService {
 			UserMaster master=new UserMaster();
 			BeanUtils.copyProperties(user, master);
 			repo.save(master);
-			return "User Details are Updated";
+			//return "User Details are Updated";
+			return messages.get(UserRegisterConstants.UPDATE_SUCCESS);
 		}
 		else {
-			return "User Not Found to Update";
+			return messages.get(UserRegisterConstants.UPDATE_FAILURE);
 		}
 		
 	}
@@ -182,10 +188,10 @@ public class UserMgmtServiceImpl implements IUserMgmtService {
 		Optional<UserMaster> opt=repo.findById(id);
 		if(opt.isPresent()) {
 			repo.deleteById(id);
-			return "User Details are Deleted";
+			return messages.get(UserRegisterConstants.DELETE_SUCCESS);
 		}
 		else {
-			return "User Not Found to Delete";
+			return messages.get(UserRegisterConstants.DELETE_FAILURE);
 		}
 		
 	}
@@ -197,9 +203,9 @@ public class UserMgmtServiceImpl implements IUserMgmtService {
 			UserMaster master=opt.get();
 			master.setActiveSw(status);
 			repo.save(master);
-			return "User Status is Changed";
+			return messages.get(UserRegisterConstants.STATUS_CHANGE_SUCCESS);
 		}
-		return "User not found for status Change";
+		return messages.get(UserRegisterConstants.STATUS_CHANGE_FAILURE);
 	}
 
 	@Override
@@ -211,9 +217,9 @@ public class UserMgmtServiceImpl implements IUserMgmtService {
 			String  subject="  mail for  password recovery";
 			String  mailBody=readEmailMessageBody(env.getProperty("mailbody.recoverpwd.location"), recover.getName(), pwd);  //private method
 			utils.sendEmailMessage(recover.getEmail(), subject, mailBody);
-			return  pwd +" mail is  sent having the recoved password";
+			return  pwd +messages.get(UserRegisterConstants.RECOVER_PASSWORD_SUCCESS);
 		}
-		return "User and  email  is not found";
-	}
+		return messages.get(UserRegisterConstants.RECOVER_PASSWORD_FAILURE);
+				}
 
 }
