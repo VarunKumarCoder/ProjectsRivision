@@ -153,32 +153,67 @@ public class UserMgmtServiceImpl implements IUserMgmtService {
 
 	@Override
 	public UserAccount showUserByEmailAndName(String email, String name) {
-		// TODO Auto-generated method stub
-		return null;
+		UserMaster master=repo.findByNameAndEmail(name, email);
+		UserAccount account=null;
+		if(master!=null) {
+			account=new UserAccount();
+			BeanUtils.copyProperties(master, account);
+		}
+		return account;
 	}
 
 	@Override
 	public String updateUser(UserAccount user) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<UserMaster> opt=repo.findById(user.getUserId());
+		if(opt.isPresent()) {
+			UserMaster master=new UserMaster();
+			BeanUtils.copyProperties(user, master);
+			repo.save(master);
+			return "User Details are Updated";
+		}
+		else {
+			return "User Not Found to Update";
+		}
+		
 	}
 
 	@Override
 	public String deleteUserById(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<UserMaster> opt=repo.findById(id);
+		if(opt.isPresent()) {
+			repo.deleteById(id);
+			return "User Details are Deleted";
+		}
+		else {
+			return "User Not Found to Delete";
+		}
+		
 	}
 
 	@Override
 	public String changeUserStatus(Integer id, String status) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<UserMaster> opt=repo.findById(id);
+		if(opt.isPresent()) {
+			UserMaster master=opt.get();
+			master.setActiveSw(status);
+			repo.save(master);
+			return "User Status is Changed";
+		}
+		return "User not found for status Change";
 	}
 
 	@Override
 	public String recoverPassword(RecoverPassword recover) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		UserMaster   master=repo.findByNameAndEmail(recover.getName(), recover.getEmail());
+		if(master!=null) {
+			String  pwd=master.getPassword();
+			 //send the recovered password  to the email account 
+			String  subject="  mail for  password recovery";
+			String  mailBody=readEmailMessageBody(env.getProperty("mailbody.recoverpwd.location"), recover.getName(), pwd);  //private method
+			utils.sendEmailMessage(recover.getEmail(), subject, mailBody);
+			return  pwd +" mail is  sent having the recoved password";
+		}
+		return "User and  email  is not found";
 	}
 
 }
